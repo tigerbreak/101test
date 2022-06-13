@@ -1,0 +1,19 @@
+#!/bin/bash
+if test -e /root/.ssh/id_rsa.pub
+then
+        echo "密钥已经存在，不再重新生成"
+else
+        ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa  #生成密钥
+        echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config #更改配置文件
+        echo 'UserKnownHostsFile /dev/null' >> /etc/ssh/ssh_config
+fi
+
+n=$#
+echo "---------总共$n个主机-------------"
+while (($n>0))
+do
+     para=`eval echo '$'"$n"`
+     echo "正在配置$para主机"
+     ssh-copy-id -i ~/.ssh/id_rsa.pub root@$para  #拷贝密钥
+     let "n--"
+done
